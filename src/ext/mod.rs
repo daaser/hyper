@@ -158,14 +158,14 @@ impl fmt::Debug for Protocol {
 /// [`preserve_header_case`]: /client/struct.Client.html#method.preserve_header_case
 #[cfg(all(any(feature = "client", feature = "server"), feature = "http1"))]
 #[derive(Clone, Debug)]
-pub(crate) struct HeaderCaseMap(HeaderMap<Bytes>);
+pub struct HeaderCaseMap(HeaderMap<Bytes>);
 
 #[cfg(all(any(feature = "client", feature = "server"), feature = "http1"))]
 impl HeaderCaseMap {
     /// Returns a view of all spellings associated with that header name,
     /// in the order they were found.
     #[cfg(feature = "client")]
-    pub(crate) fn get_all<'a>(
+    pub fn get_all<'a>(
         &'a self,
         name: &HeaderName,
     ) -> impl Iterator<Item = impl AsRef<[u8]> + 'a> + 'a {
@@ -175,22 +175,26 @@ impl HeaderCaseMap {
     /// Returns a view of all spellings associated with that header name,
     /// in the order they were found.
     #[cfg(any(feature = "client", feature = "server"))]
-    pub(crate) fn get_all_internal(&self, name: &HeaderName) -> ValueIter<'_, Bytes> {
+    pub fn get_all_internal(&self, name: &HeaderName) -> ValueIter<'_, Bytes> {
         self.0.get_all(name).into_iter()
     }
 
+    /// Returns an instance of a [`HeaderCaseMap`] instantiated with a default
+    /// header map of bytes [`HeaderValue`]
     #[cfg(any(feature = "client", feature = "server"))]
-    pub(crate) fn default() -> Self {
+    pub fn default() -> Self {
         Self(Default::default())
     }
 
+    /// Inserts a header name and value in the map
     #[cfg(any(test, feature = "ffi"))]
-    pub(crate) fn insert(&mut self, name: HeaderName, orig: Bytes) {
+    pub fn insert(&mut self, name: HeaderName, orig: Bytes) {
         self.0.insert(name, orig);
     }
 
+    /// Appends a header value to an existing header name
     #[cfg(any(feature = "client", feature = "server"))]
-    pub(crate) fn append<N>(&mut self, name: N, orig: Bytes)
+    pub fn append<N>(&mut self, name: N, orig: Bytes)
     where
         N: IntoHeaderName,
     {
